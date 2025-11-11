@@ -1,0 +1,70 @@
+write a java program to implement Priority(Non preemptive ) algorithm of CPU scheduling
+
+
+import java.util.*;
+
+class Process {
+    int pid;        // Process ID
+    int bt;         // Burst Time
+    int priority;   // Priority
+    int wt;         // Waiting Time
+    int tat;        // Turnaround Time
+
+    Process(int pid, int bt, int priority) {
+        this.pid = pid;
+        this.bt = bt;
+        this.priority = priority;
+    }
+}
+
+public class PriorityNonPreemptive {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of processes: ");
+        int n = sc.nextInt();
+
+        Process[] p = new Process[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("\nEnter details for Process " + (i + 1) + ":");
+            System.out.print("Burst Time: ");
+            int bt = sc.nextInt();
+            System.out.print("Priority (lower number = higher priority): ");
+            int priority = sc.nextInt();
+            p[i] = new Process(i + 1, bt, priority);
+        }
+
+        // Sort by priority (ascending)
+        Arrays.sort(p, Comparator.comparingInt(a -> a.priority));
+
+        // Calculate Waiting Time and Turnaround Time
+        p[0].wt = 0;
+        for (int i = 1; i < n; i++) {
+            p[i].wt = 0;
+            for (int j = 0; j < i; j++) {
+                p[i].wt += p[j].bt;
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            p[i].tat = p[i].bt + p[i].wt;
+        }
+
+        // Display results
+        System.out.println("\n-------------------------------------------------------");
+        System.out.println("PID\tPriority\tBurst Time\tWaiting Time\tTurnaround Time");
+        System.out.println("-------------------------------------------------------");
+        int totalWT = 0, totalTAT = 0;
+        for (Process proc : p) {
+            System.out.println(proc.pid + "\t" + proc.priority + "\t\t" + proc.bt + "\t\t" + proc.wt + "\t\t" + proc.tat);
+            totalWT += proc.wt;
+            totalTAT += proc.tat;
+        }
+
+        System.out.println("-------------------------------------------------------");
+        System.out.printf("Average Waiting Time: %.2f\n", (float) totalWT / n);
+        System.out.printf("Average Turnaround Time: %.2f\n", (float) totalTAT / n);
+
+        sc.close();
+    }
+}

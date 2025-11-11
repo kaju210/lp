@@ -1,0 +1,72 @@
+write a java program to implement SJF(Non preemptive ) algorithm of CPU scheduling
+
+
+
+import java.util.Scanner;
+
+class Process {
+    int pid;            // Process ID
+    int burstTime;      // Burst Time
+    int waitingTime;    // Waiting Time
+    int turnaroundTime; // Turnaround Time
+}
+
+public class SJF_NonPreemptive {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of processes: ");
+        int n = sc.nextInt();
+
+        Process[] p = new Process[n];
+
+        for (int i = 0; i < n; i++) {
+            p[i] = new Process();
+            p[i].pid = i + 1;
+            System.out.print("Enter Burst Time for Process " + (i + 1) + ": ");
+            p[i].burstTime = sc.nextInt();
+        }
+
+        // Sort processes by burst time (SJF logic)
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (p[j].burstTime > p[j + 1].burstTime) {
+                    Process temp = p[j];
+                    p[j] = p[j + 1];
+                    p[j + 1] = temp;
+                }
+            }
+        }
+
+        // Waiting time and turnaround time calculation
+        p[0].waitingTime = 0;
+        for (int i = 1; i < n; i++) {
+            p[i].waitingTime = 0;
+            for (int j = 0; j < i; j++)
+                p[i].waitingTime += p[j].burstTime;
+        }
+
+        for (int i = 0; i < n; i++)
+            p[i].turnaroundTime = p[i].waitingTime + p[i].burstTime;
+
+        // Calculate average times
+        float avgWT = 0, avgTAT = 0;
+        for (int i = 0; i < n; i++) {
+            avgWT += p[i].waitingTime;
+            avgTAT += p[i].turnaroundTime;
+        }
+
+        avgWT /= n;
+        avgTAT /= n;
+
+        // Display results
+        System.out.println("\nProcess\tBurst Time\tWaiting Time\tTurnaround Time");
+        for (int i = 0; i < n; i++) {
+            System.out.println(p[i].pid + "\t\t" + p[i].burstTime + "\t\t" + p[i].waitingTime + "\t\t" + p[i].turnaroundTime);
+        }
+
+        System.out.println("\nAverage Waiting Time: " + avgWT);
+        System.out.println("Average Turnaround Time: " + avgTAT);
+
+        sc.close();
+    }
+}
